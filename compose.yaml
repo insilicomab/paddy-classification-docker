@@ -1,0 +1,15 @@
+services:
+ paddy-classification:
+   build:
+     context: .
+     dockerfile: env/Dockerfile
+   ports:
+     - 8888:8888
+   volumes:
+     - ./config:/workspace/config
+     - ./data:/workspace/data
+     - ./model:/workspace/model
+     - ./notebooks:/workspace/notebooks
+     - ./outputs:/workspace/outputs
+     - ./outputs:/workspace/src
+   working_dir: /workspace
