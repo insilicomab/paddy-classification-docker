@@ -42,6 +42,17 @@ RUN git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT \
     && /usr/local/bin/python-build -v $PYTHON_VERSION $PYTHON_ROOT \
     && rm -rf $PYENV_ROOT
 
+# Poetryをインストール
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
+ENV PATH /root/.local/bin:$PATH
+
+RUN poetry config virtualenvs.create false
+
+WORKDIR /workspace
+COPY env/pyproject.toml .
+COPY env/poetry.lock .
+
+RUN poetry install --no-dev
 
 CMD ["tail", "-f", "/dev/null"]
