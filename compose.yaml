@@ -7,9 +7,10 @@ services:
      - 8888:8888
    volumes:
      - ./config:/workspace/config
-     - ./data:/workspace/data
+     - ../data:/workspace/data
+     - ./inputs:/workspace/inputs
      - ./model:/workspace/model
      - ./notebooks:/workspace/notebooks
      - ./outputs:/workspace/outputs
-     - ./outputs:/workspace/src
+     - ./src:/workspace/src
    working_dir: /workspace
