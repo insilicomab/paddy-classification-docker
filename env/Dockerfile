@@ -1,8 +1,8 @@
 FROM nvidia/cuda:12.1.1-runtime-ubuntu20.04
 
 # 環境変数の設定
-ENV PYTHON_VERSION 3.10.13
-ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHON_VERSION=3.10.13 \
+    DEBIAN_FRONTEND=noninteractive
 
 # 必要なパッケージをインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
