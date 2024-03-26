@@ -1,0 +1,153 @@
+## Hydra Settings ##
+defaults:
+  - _self_
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  sweep:
+    dir: .
+    subdir: .
+
+## Experiment Tracker Settings ##
+tracker:
+  name: wandb
+  config_name: config.yaml
+  data_dir: ${root}
+  model_name: ${net.model_name}
+  wandb:
+    project: paddy-docker
+    run_name: baseline
+    tags: []
+    notes: ""
+  mlflow:
+    uri: null
+    experiment: paddy-docker
+    run_name: baseline
+
+## User Settings ##
+root: data/paddy-disease-classification/train_images
+df_path: inputs/data.csv
+num_classes: 10
+image_size: 480
+seed: 0
+
+## Dataset ##
+train_dataloader:
+  batch_size: 2
+  shuffle: True
+  num_workers: 2
+  pin_memory: True
+  imbalancedDatasetSampler: True
+
+val_dataloader:
+  batch_size: 1
+  shuffle: False # DO NOT CHANGE!!!
+  num_workers: 2
+  pin_memory: True
+
+test_dataloader:
+  batch_size: 1
+  shuffle: False # DO NOT CHANGE!!!
+  num_workers: 2
+  pin_memory: True
+
+train_transform:
+  random_crop:
+    enable: True
+    image_size: ${image_size}
+  randaugment:
+    enable: False
+    num_ops: 4
+    magnitude: 9
+  trivial_augment_wide:
+    enable: False
+  augmix:
+    enable: True
+    severity: 3
+    mixture_width: 3
+    chain_depth: -1
+    alpha: 1.0
+    all_ops: True
+  normalize:
+    enable: True
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+  mixup:
+    enable: True
+    alpha: 0.4
+    max_epochs: 20
+
+test_transform:
+  center_crop:
+    enable: True
+    image_size: ${image_size}
+  normalize:
+    enable: True
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+## Model ##
+net:
+  model_name: mobilenetv3_large_100.ra_in1k # timm.model
+  pretrained: True
+
+metrics:
+  task: multiclass
+  top_k: 1
+  average: macro
+  f_beta_weight: 0.5
+
+loss_fn:
+  name: CrossEntropyLoss
+
+optimizer:
+  name: AdamW
+  adam:
+    lr: 1e-4
+    weight_decay: 1e-5
+  adamW:
+    lr: 1e-4
+    weight_decay: 1e-5
+  sgd:
+    lr: 1e-4
+    weight_decay: 1e-5
+  ranger21:
+    lr: 1e-4
+    weight_decay: 1e-5
+    num_batches_per_epoch: 54 # dataset / batch size
+  sam:
+    base_optimizer: AdamW
+    rho: 0.05
+    adaptive: False
+
+scheduler:
+  name: CosineAnnealingWarmRestarts
+  CosineAnnealingWarmRestarts:
+    T_0: 10
+    eta_min: 1e-6
+
+callbacks:
+  early_stopping:
+    enable: True
+    monitor: val_MulticlassFBetaScore
+    patience: 10
+    mode: max
+  model_checkpoint:
+    enable: True
+    monitor: val_MulticlassFBetaScore
+    mode: max
+    save_top_k: 1
+    save_last: False
+
+## Trainer ##
+trainer:
+  max_epochs: 25
+  accelerator: gpu
+  devices: -1
+  accumulate_grad_batches: 16
+  auto_lr_find: True
+  deterministic: True

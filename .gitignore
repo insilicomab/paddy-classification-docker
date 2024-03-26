@@ -1,0 +1,7 @@
+__pycache__/
+.DS_Store
+wandb/
+checkpoints/
+.mypy_cache/
+mlruns/
+.venv
