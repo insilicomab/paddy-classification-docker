@@ -3,6 +3,13 @@ services:
    build:
      context: .
      dockerfile: env/Dockerfile
+   deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
    ports:
      - 8888:8888
    volumes:
